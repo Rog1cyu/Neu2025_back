@@ -3,11 +3,14 @@ package com.neuedu.nursehome.controller;
 import com.neuedu.nursehome.entity.Meal;
 import com.neuedu.nursehome.service.MealService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/meals")
@@ -37,10 +40,19 @@ public class MealController {
      * @return 操作结果
      */
     @PostMapping
-    public boolean addMeal(@RequestBody Meal meal) {
-        return mealService.save(meal);
-    }
+    public ResponseEntity<Map<String, Object>> addMeal(@RequestBody Meal meal) {
+        boolean saved = mealService.save(meal);
 
+        if (!saved) {
+            // 保存失败，返回 500
+            return ResponseEntity.internalServerError().body(Map.of("message", "新增膳食失败"));
+        }
+
+        // mealId 会在保存后回填
+        Map<String, Object> res = new HashMap<>();
+        res.put("mealId", meal.getMealId());
+        return ResponseEntity.ok(res);
+    }
     /**
      * 修改膳食信息
      * @param meal 膳食对象

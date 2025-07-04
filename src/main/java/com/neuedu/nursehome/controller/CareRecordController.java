@@ -35,6 +35,8 @@ public class CareRecordController {
         return careRecordService.page(new Page<>(page, size), wrapper);
     }
 
+
+
     @PostMapping
     public boolean create(@RequestBody CareRecord careRecord) {
         return careRecordService.save(careRecord);
